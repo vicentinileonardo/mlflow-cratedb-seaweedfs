@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cratedb-query-1
+  namespace: cratedb
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: cratedb-query-1
+        image: ghcr.io/crate/ml-runtime:latest
+        command: 
+          - crash
+          - --hosts=http://cratedb.cratedb.svc.cluster.local:4200
+          - --schema=mlflow
+          - --command=SELECT * FROM "experiments";
+        resources:
+          limits:
+            memory: "300Mi"
+            cpu: "0.5"
+          requests:
+            memory: "200Mi"
+            cpu: "0.25"
+        env:
+        - name: MLFLOW_TRACKING_URI
+          value: http://mlflow-tracking.mlflow-tracking.svc.cluster.local:5000
+        - name: CRATEDB_HTTP_URL
+          value: http://crate@cratedb.cratedb.svc.cluster.local:4200/?schema=doc
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: cratedb-query-2
+  namespace: cratedb
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: cratedb-query-2
+        image: ghcr.io/crate/ml-runtime:latest
+        command: 
+          - crash
+          - --hosts=http://cratedb.cratedb.svc.cluster.local:4200
+          - --schema=mlflow
+          - --command=SELECT * FROM "runs";
+        resources:
+          limits:
+            memory: "300Mi"
+            cpu: "0.5"
+          requests:
+            memory: "200Mi"
+            cpu: "0.25"
+        env:
+        - name: MLFLOW_TRACKING_URI
+          value: http://mlflow-tracking.mlflow-tracking.svc.cluster.local:5000
+        - name: CRATEDB_HTTP_URL
+          value: http://crate@cratedb.cratedb.svc.cluster.local:4200/?schema=doc
