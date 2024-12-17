@@ -59,7 +59,7 @@ kubectl port-forward service/mlflow-tracking 5000:5000 -n mlflow-tracking
 ```
 Keep the port forwarding running in a terminal.
 
-You can access the mlflow tracking server in the browser at `http://localhost:5000`.
+You can access the mlflow tracking server in the browser at [http://localhost:5000](http://localhost:5000).
 
 ## Running experiments inside the cluster
 
