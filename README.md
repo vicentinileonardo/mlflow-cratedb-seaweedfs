@@ -11,6 +11,12 @@ Notes:
 
 ## How to install
 
+Create the namespaces:
+```bash
+kubectl create ns cratedb
+kubectl create ns mlflow-tracking
+```
+
 Install **CrateDB** and **mlflow tracking server**:
 ```bash
 kubectl apply -f manifests/mlflow-cratedb.yaml
@@ -114,6 +120,7 @@ mlflow-cratedb, version 2.14.1
 
 Run the local experiment:
 ```bash
+export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
 python tracking_dummy_local.py
 ```
 
