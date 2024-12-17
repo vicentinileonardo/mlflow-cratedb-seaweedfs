@@ -26,7 +26,7 @@ kubectl run --rm -it --image=alpine/curl:latest test-client -- /bin/sh
 curl cratedb.cratedb.svc.cluster.local:4200
 ```
 <details>
-<summary>Expected response</summary>
+<summary>Expected response (Click to expand) </summary>
 
 ```json
 {
@@ -51,10 +51,15 @@ kubectl run --rm -it --image=alpine/curl:latest test-client -- /bin/sh
 
 # inside the container
 curl mlflow-tracking.mlflow-tracking.svc.cluster.local:5000
+```
 
-# Expected response
+<details>
+<summary>Expected response (Click to expand) </summary>
+
+```html
 <!doctype html><html lang="en"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no"/><link rel="shortcut icon" href="./static-files/favicon.ico"/><meta name="theme-color" content="#000000"/><link rel="manifest" href="./static-files/manifest.json" crossorigin="use-credentials"/><title>MLflow</title><script defer="defer" src="static-files/static/js/main.68ca1005.js"></script><link href="static-files/static/css/main.328af5c2.css" rel="stylesheet"></head><body><noscript>You need to enable JavaScript to run this app.</noscript><div id="root"></div><div id="modal"></div></body></html>/
 ```
+</details>
 
 Port forwarding to mlflow tracking server (for testing):
 This is due to a local setup.
@@ -96,11 +101,16 @@ pip install -U -r requirements.txt
 Check installation of mlflow-cratedb:
 ```bash
 mlflow-cratedb --version
+```
 
-# Expected output
+<details>
+<summary>Expected output (Click to expand) </summary>
+
+```bash
 2024/12/17 01:11:35 INFO mlflow: Amalgamating MLflow for CrateDB
 mlflow-cratedb, version 2.14.1
 ```
+</details>
 
 Run the local experiment:
 ```bash
@@ -117,8 +127,12 @@ kubectl apply -f manifests/cratedb-queries.yaml
 Check the logs of the pod related to query-1:
 ```bash
 kubectl logs pod/pod/cratedb-query-1-kwpb4 -n cratedb
+```
 
-# Expected output
+<details>
+<summary>Expected output (Click to expand) </summary>
+
+```bash
 CONNECT OK
 +---------------+----------------------------+---------------------------------+-----------------+---------------+------------------+
 | experiment_id | name                       | artifact_location               | lifecycle_stage | creation_time | last_update_time |
@@ -130,12 +144,19 @@ CONNECT OK
 +---------------+----------------------------+---------------------------------+-----------------+---------------+------------------+
 SELECT 4 rows in set (0.079 sec)
 ```
+</details>
+
+
 
 Check the logs of the pod related to query-2:
 ```bash
 kubectl logs pod/cratedb-query-2-pl26d -n cratedb
+```
 
-# Expected output
+<details>
+<summary>Expected output (Click to expand) </summary>
+
+```bash
 CONNECT OK
 +----------------------------------+---------------------+-------------+-------------+------------------+-------------------+----------+---------------+---------------+--------------+----------------+-----------------+----------------------------------------------------------------------------+---------------+
 | run_uuid                         | name                | source_type | source_name | entry_point_name | user_id           | status   |    start_time |      end_time | deleted_time | source_version | lifecycle_stage | artifact_uri                                                               | experiment_id |
@@ -149,3 +170,4 @@ CONNECT OK
 +----------------------------------+---------------------+-------------+-------------+------------------+-------------------+----------+---------------+---------------+--------------+----------------+-----------------+----------------------------------------------------------------------------+---------------+
 SELECT 6 rows in set (0.006 sec)
 ```
+</details>
