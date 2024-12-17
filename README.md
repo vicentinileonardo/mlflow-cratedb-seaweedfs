@@ -13,7 +13,7 @@ Notes:
 
 Install **CrateDB** and **mlflow tracking server**:
 ```bash
-kubectl apply -f mlflow-cratedb.yaml
+kubectl apply -f manifests/mlflow-cratedb.yaml
 ```
 
 ### Testing the installation
@@ -62,7 +62,7 @@ kubectl port-forward service/mlflow-tracking 5000:5000 -n mlflow-tracking
 
 Apply the mlflow experiments configurations (K8s jobs):
 ```bash
-kubectl apply -f mlflow-experiments.yaml
+kubectl apply -f manifests/mlflow-experiments.yaml
 ```
 
 ## Local experiments with mlflow tracking
@@ -104,7 +104,7 @@ python tracking_dummy_local.py
 
 Running SELECT queries on CrateDB to check experiments and runs:
 ```bash
-kubectl apply -f cratedb-queries.yaml
+kubectl apply -f manifests/cratedb-queries.yaml
 ```
 
 Check the logs of the pod related to query-1:
@@ -122,4 +122,23 @@ CONNECT OK
 | 1734390137379 | numenta-merlion-experiment | mlflow-artifacts:/1734390137379 | active          | 1734390137365 |    1734390137365 |
 +---------------+----------------------------+---------------------------------+-----------------+---------------+------------------+
 SELECT 4 rows in set (0.079 sec)
+```
+
+Check the logs of the pod related to query-2:
+```bash
+kubectl logs pod/cratedb-query-2-pl26d -n cratedb
+
+# Expected output
+CONNECT OK
++----------------------------------+---------------------+-------------+-------------+------------------+-------------------+----------+---------------+---------------+--------------+----------------+-----------------+----------------------------------------------------------------------------+---------------+
+| run_uuid                         | name                | source_type | source_name | entry_point_name | user_id           | status   |    start_time |      end_time | deleted_time | source_version | lifecycle_stage | artifact_uri                                                               | experiment_id |
++----------------------------------+---------------------+-------------+-------------+------------------+-------------------+----------+---------------+---------------+--------------+----------------+-----------------+----------------------------------------------------------------------------+---------------+
+| 0c28ed5390c64e1b8c1668be8314f126 | unruly-sloth-881    | UNKNOWN     |             |                  | root              | FINISHED | 1734389204845 | 1734389205646 | NULL         |                | active          | mlflow-artifacts:/1734389204315/0c28ed5390c64e1b8c1668be8314f126/artifacts | 1734389204315 |
+| 358aaa853b8f47f98802177e6f130c5f | skillful-dog-140    | UNKNOWN     |             |                  | leonardovicentini | FINISHED | 1734391907058 | 1734391907776 | NULL         |                | active          | mlflow-artifacts:/1734391906622/358aaa853b8f47f98802177e6f130c5f/artifacts | 1734391906622 |
+| 318a8e7495424ff78011c810cf6d7320 | upset-colt-323      | UNKNOWN     |             |                  | root              | FAILED   | 1734390231113 | 1734390303042 | NULL         |                | active          | mlflow-artifacts:/1734390137379/318a8e7495424ff78011c810cf6d7320/artifacts | 1734390137379 |
+| 3e38f890448043dbb1bea57b2e6cecef | carefree-sloth-975  | UNKNOWN     |             |                  | root              | FINISHED | 1734390557553 | 1734390616857 | NULL         |                | active          | mlflow-artifacts:/1734390137379/3e38f890448043dbb1bea57b2e6cecef/artifacts | 1734390137379 |
+| 5b6bfe03af7c4adba531907b0f79e9d7 | mysterious-gnu-449  | UNKNOWN     |             |                  | root              | FAILED   | 1734390137531 | 1734390214739 | NULL         |                | active          | mlflow-artifacts:/1734390137379/5b6bfe03af7c4adba531907b0f79e9d7/artifacts | 1734390137379 |
+| 2654d9d68e2647859ee50a88a03a9a6a | lyrical-dolphin-457 | UNKNOWN     |             |                  | root              | FAILED   | 1734390328445 | 1734390401956 | NULL         |                | active          | mlflow-artifacts:/1734390137379/2654d9d68e2647859ee50a88a03a9a6a/artifacts | 1734390137379 |
++----------------------------------+---------------------+-------------+-------------+------------------+-------------------+----------+---------------+---------------+--------------+----------------+-----------------+----------------------------------------------------------------------------+---------------+
+SELECT 6 rows in set (0.006 sec)
 ```
