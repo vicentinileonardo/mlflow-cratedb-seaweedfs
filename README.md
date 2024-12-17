@@ -24,8 +24,11 @@ kubectl run --rm -it --image=alpine/curl:latest test-client -- /bin/sh
 
 # inside the container
 curl cratedb.cratedb.svc.cluster.local:4200
+```
+<details>
+<summary>Expected response</summary>
 
-# Expected response
+```json
 {
   "ok" : true,
   "status" : 200,
@@ -40,6 +43,7 @@ curl cratedb.cratedb.svc.cluster.local:4200
   }
 }
 ```
+</details>
 
 Testing connection to mlflow tracking server:
 ```bash
