@@ -1,10 +1,6 @@
-References:
-- https://github.com/seaweedfs/seaweedfs/tree/master/k8s/charts/seaweedfs
-- Original values.yaml: https://github.com/seaweedfs/seaweedfs/blob/ba0707af641e41ba3cbed2b533ed2432d21295ba/k8s/charts/seaweedfs/values.yaml
+## Changes w.r.t. standard `values.yaml`
 
-## Changes w.r.t. references
-
-Main changes with respect to the original `values.yaml`:
+Main changes with respect to the original `values.yaml` of SeaweedFS helm chart (see references):
 
 - changed some fields of the s3 section under filer to:
 ```yaml
@@ -156,4 +152,7 @@ remove_bucket: test1
 
 
 
+## References:
+- https://github.com/seaweedfs/seaweedfs/tree/master/k8s/charts/seaweedfs
+- Original values.yaml: https://github.com/seaweedfs/seaweedfs/blob/ba0707af641e41ba3cbed2b533ed2432d21295ba/k8s/charts/seaweedfs/values.yaml
 

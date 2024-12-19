@@ -12,7 +12,6 @@ The tracking server is used as a proxy to store the metadata in **CrateDB**.
 In addition, if **SeaweedFS** is used, the artifacts are stored in SeaweedFS and tracking server is used as a proxy.
 If SeaweedFS is not used, the artifacts are stored in the local filesystem of the tracking server.
 
-
 TODO (add diagrams)
 
 TODO
@@ -23,7 +22,6 @@ Option 3 (simple, local filesystem of the tracking server)
 ## Prerequisites
 
 - **SeaweedFS** running in the cluster (please see [SeaweedFS installation](/seaweedfs/README.md) in this repository) only if you want to use the SeaweedFS storage as an S3-compatible Artifact Store (see [mlfow Artifact Stores](https://mlflow.org/docs/latest/tracking/artifacts-stores.html) to know more about it). This option is recommended.
-
 
 ## How to install
 
