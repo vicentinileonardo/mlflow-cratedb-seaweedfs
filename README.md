@@ -67,6 +67,11 @@ curl mlflow-tracking.mlflow-tracking.svc.cluster.local:5000
 ```
 </details>
 
+If needed, you can attach to the mlflow tracking server pod:
+```bash
+kubectl exec -it pod/mlflow-tracking-xxxxx -n mlflow-tracking -- /bin/bash
+```
+
 Port forwarding to mlflow tracking server (for testing):
 This is due to a local setup.
 ```bash

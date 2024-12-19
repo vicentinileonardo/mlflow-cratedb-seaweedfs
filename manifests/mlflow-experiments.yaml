@@ -1,51 +1,51 @@
-#apiVersion: batch/v1
-#kind: Job
-#metadata:
-#  name: ml-runtime-tracking-dummy-1
-#  namespace: mlflow-tracking
-#spec:
-#  template:
-#    spec:
-#      restartPolicy: Never
-#      containers:
-#      - name: ml-runtime
-#        image: ghcr.io/crate/ml-runtime:latest
-#        command: ["python", "/opt/ml/bin/tracking_dummy.py"]
-#        resources:
-#          limits:
-#            memory: "500Mi"
-#            cpu: "0.5"
-#          requests:
-#            memory: "200Mi"
-#            cpu: "0.25"
-#        env:
-#        - name: MLFLOW_TRACKING_URI
-#          value: http://mlflow-tracking.mlflow-tracking.svc.cluster.local:5000
-#        - name: CRATEDB_HTTP_URL
-#          value: http://crate@cratedb.cratedb.svc.cluster.local:4200/?schema=doc
----
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ml-runtime-tracking-dummy-2
+  name: ml-runtime-tracking-dummy-1
   namespace: mlflow-tracking
 spec:
   template:
     spec:
       restartPolicy: Never
       containers:
-      - name: ml-runtime-tracking-dummy-2
+      - name: ml-runtime
         image: ghcr.io/crate/ml-runtime:latest
-        command: ["python", "/opt/ml/bin/tracking_merlion.py"]
+        command: ["python", "/opt/ml/bin/tracking_dummy.py"]
         resources:
           limits:
-            memory: "900Mi"
+            memory: "500Mi"
             cpu: "0.5"
           requests:
-            memory: "850Mi"
-            cpu: "0.5"
+            memory: "200Mi"
+            cpu: "0.25"
         env:
         - name: MLFLOW_TRACKING_URI
           value: http://mlflow-tracking.mlflow-tracking.svc.cluster.local:5000
         - name: CRATEDB_HTTP_URL
           value: http://crate@cratedb.cratedb.svc.cluster.local:4200/?schema=doc
+#---
+#apiVersion: batch/v1
+#kind: Job
+#metadata:
+#  name: ml-runtime-tracking-dummy-2
+#  namespace: mlflow-tracking
+#spec:
+#  template:
+#    spec:
+#      restartPolicy: Never
+#      containers:
+#      - name: ml-runtime-tracking-dummy-2
+#        image: ghcr.io/crate/ml-runtime:latest
+#        command: ["python", "/opt/ml/bin/tracking_merlion.py"]
+#        resources:
+#          limits:
+#            memory: "1.5Gi"
+#            cpu: "1.5"
+#          requests:
+#            memory: "1Gi"
+#            cpu: "1.0"
+#        env:
+#        - name: MLFLOW_TRACKING_URI
+#          value: http://mlflow-tracking.mlflow-tracking.svc.cluster.local:5000
+#        - name: CRATEDB_HTTP_URL
+#          value: http://crate@cratedb.cratedb.svc.cluster.local:4200/?schema=doc

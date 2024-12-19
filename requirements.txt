@@ -6,5 +6,7 @@ pydantic<3
 salesforce-merlion>=2,<3
 sqlalchemy==2.*
 
+boto3
+
 # Development.
 # mlflow-cratedb @ git+https://github.com/crate-workbench/mlflow-cratedb.git@main
