@@ -23,7 +23,8 @@ TODO (add diagrams)
 
 [![Architecture with SeaweedFS](./docs/images/mlflow-cratedb-seaweedfs.png)](./docs/images/mlflow-cratedb-seaweedfs.png)
 
-*Figure 1: Detailed architecture showing the integration of MLflow with CrateDB and SeaweedFS components.*
+<center>Figure 1: Detailed architecture showing the integration of MLflow with CrateDB and SeaweedFS components.</center>
+
 
 
 
