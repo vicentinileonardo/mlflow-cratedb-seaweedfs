@@ -1,4 +1,4 @@
-# MLflow K8s deployment
+# MLflow CrateDB SeaweedFS on Kubernetes
 
 This repository contains the configurations to deploy MLflow tracking server with CrateDB as the metadata store and SeaweedFS as the artifact store in a Kubernetes cluster.
 
