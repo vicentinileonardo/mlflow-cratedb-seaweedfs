@@ -48,21 +48,3 @@ ModuleNotFoundError: No module named 'boto3'
 
 
 
-
-
-
-order matters???? for an error in the logs (to be re checked)
-
-mlflow-cratedb server \
-    --artifacts-destination=s3://test1 \
-    --serve-artifacts \
-    --host=0.0.0.0 \
-    --gunicorn-opts=--log-level=debug
-    --backend-store-uri=crate://crate@cratedb.cratedb.svc.cluster.local:4200/?schema=mlflow" 
-
-
-
-  File "/usr/local/lib/python3.11/site-packages/botocore/handlers.py", line 301, in validate_bucket_name
-    raise ParamValidationError(report=error_msg)
-botocore.exceptions.ParamValidationError: Parameter validation failed:
-Invalid bucket name "test1   --serve-artifacts   --host=*******   --gunicorn-opts=--log-level=debug  --backend-store-uri=crate:": Bucket name must match the regex "^[a-zA-Z0-9.\-_]{1,255}$" or be an ARN matching the regex "^arn:(aws).*:(s3|s3-object-lambda):[a-z\-0-9]*:[0-9]{12}:accesspoint[/:][a-zA-Z0-9\-.]{1,63}$|^arn:(aws).*:s3-outposts:[a-z\-0-9]+:[0-9]{12}:outpost[/:][a-zA-Z0-9\-]{1,63}[/:]accesspoint[/:][a-zA-Z0-9\-]{1,63}$"

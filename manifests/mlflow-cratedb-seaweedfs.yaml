@@ -72,20 +72,17 @@ spec:
       containers:
       - name: mlflow-tracking
         image: ghcr.io/crate/mlflow-cratedb:latest
-
         # command to do pip install boto3 and then start the mlflow server
         command: ["/bin/sh", "-c"]
         args:
         - |
           pip install boto3 &&
           mlflow-cratedb server \
+            --backend-store-uri=crate://crate@cratedb.cratedb.svc.cluster.local:4200/?schema=mlflow \
             --artifacts-destination=s3://test1 \
             --serve-artifacts \
             --host=0.0.0.0 \
-            --gunicorn-opts=--log-level=debug
-            --backend-store-uri=crate://crate@cratedb.cratedb.svc.cluster.local:4200/?schema=mlflow \
-           
-        
+            --gunicorn-opts=--log-level=debug    
         ports:
         - containerPort: 5000
         resources:
@@ -108,7 +105,6 @@ spec:
             secretKeyRef:
               name: s3-secret-deployment
               key: AWS_SECRET_ACCESS_KEY
-
 ---
 apiVersion: v1
 kind: Service
