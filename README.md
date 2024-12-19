@@ -1,13 +1,6 @@
-# mlflow K8s deployment
+# MLflow K8s deployment
 
-Main references:
-- https://github.com/crate/mlflow-cratedb/
-- https://github.com/crate/mlflow-cratedb/tree/main/examples
-- https://github.com/crate/mlflow-cratedb/blob/main/docs/container.md
-
-Notes:
-- Current mlflow version is: 2.19.0
-- mlflow version found inside mlflow-cratedb adapter is: 2.14.1 (to be confirmed)
+This repository contains the configurations to deploy MLflow tracking server with CrateDB as the metadata store and SeaweedFS as the artifact store in a Kubernetes cluster.
 
 ## Overview
 
@@ -15,8 +8,8 @@ TODO
 
 ## Architecture
 
-The tracking server is used as a proxy to store the metadata in CrateDB. 
-In addition, if SeaweedFS is used, the artifacts are stored in SeaweedFS and tracking server is used as a proxy.
+The tracking server is used as a proxy to store the metadata in **CrateDB**. 
+In addition, if **SeaweedFS** is used, the artifacts are stored in SeaweedFS and tracking server is used as a proxy.
 If SeaweedFS is not used, the artifacts are stored in the local filesystem of the tracking server.
 
 
@@ -29,7 +22,7 @@ Option 3 (simple, local filesystem of the tracking server)
 
 ## Prerequisites
 
-- SeaweedFS running in the cluster (please see [SeaweedFS installation](/seaweedfs/README.md) in this repository) only if you want to use the SeaweedFS storage as an S3-compatible Artifact Store (see [mlfow Artifact Stores](https://mlflow.org/docs/latest/tracking/artifacts-stores.html) to know more about it). This option is recommended.
+- **SeaweedFS** running in the cluster (please see [SeaweedFS installation](/seaweedfs/README.md) in this repository) only if you want to use the SeaweedFS storage as an S3-compatible Artifact Store (see [mlfow Artifact Stores](https://mlflow.org/docs/latest/tracking/artifacts-stores.html) to know more about it). This option is recommended.
 
 
 ## How to install
@@ -132,7 +125,7 @@ kubectl apply -f manifests/mlflow-experiments.yaml
 
 This is the **typical use case** where clients run experiments locally and send the metadata and artifacts to the tracking server. 
 
-Taking the `tracking_dummy_local.py` file as an example.
+Taking the `local_experiments/tracking_dummy_local.py` file as an example.
 The file imports the upstream mlflow library and uses the tracking API (e.g. `mlflow.set_experiment("dummy-experiment-local-env")`, `mlflow.log_metric("precision", 0.33)`).
 
 The `mlflow_cratedb` library is not needed in this case since the tracking server is used as a proxy to store the metadata in CrateDB. There is the possibility to use the `mlflow_cratedb` library to store the metadata directly in CrateDB (not the case here).
@@ -164,11 +157,15 @@ mlflow-cratedb, version 2.14.1
 ```
 </details>
 
-Run the local experiment:
+Run the local experiments:
 ```bash
 # if not set in the code, set the MLFLOW_TRACKING_URI environment variable
 export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
 python tracking_dummy_local.py
+python tracking_test.py
+
+# the following example will save artifacts (like the model)
+python tracking_wine_model.py 
 ```
 
 ## Running queries on CrateDB
@@ -227,3 +224,12 @@ CONNECT OK
 SELECT 6 rows in set (0.006 sec)
 ```
 </details>
+
+## Main references:
+- https://github.com/crate/mlflow-cratedb/
+- https://github.com/crate/mlflow-cratedb/tree/main/examples
+- https://github.com/crate/mlflow-cratedb/blob/main/docs/container.md
+
+## Notes:
+- Current `mlflow` version is: 2.19.0
+- `mlflow` version found inside `mlflow-cratedb` adapter is: 2.14.1 (to be confirmed)
