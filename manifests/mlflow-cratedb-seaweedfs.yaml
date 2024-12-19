@@ -34,6 +34,13 @@ spec:
           value: 4g
         - name: discovery.type
           value: single-node
+        volumeMounts:
+        - name: cratedb-data
+          mountPath: /data  # CrateDB data directory
+      volumes:
+      - name: cratedb-data
+        persistentVolumeClaim:
+          claimName: cratedb-pvc
 ---
 apiVersion: v1
 kind: Service
@@ -79,7 +86,7 @@ spec:
           pip install boto3 &&
           mlflow-cratedb server \
             --backend-store-uri=crate://crate@cratedb.cratedb.svc.cluster.local:4200/?schema=mlflow \
-            --artifacts-destination=s3://test1 \
+            --artifacts-destination=s3://mlartifacts \
             --serve-artifacts \
             --host=0.0.0.0 \
             --gunicorn-opts=--log-level=debug    

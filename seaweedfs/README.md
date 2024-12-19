@@ -1,12 +1,10 @@
-
-
-First setup:
-
-Source:
+References:
 - https://github.com/seaweedfs/seaweedfs/tree/master/k8s/charts/seaweedfs
 - Original values.yaml: https://github.com/seaweedfs/seaweedfs/blob/ba0707af641e41ba3cbed2b533ed2432d21295ba/k8s/charts/seaweedfs/values.yaml
 
-Main changes with respect to the original values.yaml:
+## Changes w.r.t. references
+
+Main changes with respect to the original `values.yaml`:
 
 - changed some fields of the s3 section under filer to:
 ```yaml
@@ -19,8 +17,8 @@ filer:
       - name: mlartifacts
         anonymousRead: false
 ```
-- changed affinity to `affinity:""` everywhere in the values.yaml
-- changed nodeSelector  (de-commented) across the values.yaml
+- changed affinity to `affinity:""` everywhere in the `values.yaml`
+- changed nodeSelector  (de-commented) across the `values.yaml`
 
 ## How to install
 
@@ -33,9 +31,6 @@ Label the node:
 ```bash
 kubectl label node YOUR_NODE_NAME sw-volume=true sw-backend=true
 ```
-
-ERROR IN DOCS: kubectl label node YOUR_NODE_NAME sw-volume=true,sw-backend=true
-error: invalid label spec: sw-volume=true,sw-backend=true
 
 Create the namespace
 ```bash
@@ -76,9 +71,9 @@ Port forward the s3 service:
 kubectl port-forward service/seaweedfs-s3 8333:8333 -n seaweedfs
 ```
 
-### Testing the installation
+### Testing the installation of SeaweedFS
 
-Source:
+Reference:
 - https://github.com/seaweedfs/seaweedfs/wiki/AWS-CLI-with-SeaweedFS
 
 Install the aws cli:

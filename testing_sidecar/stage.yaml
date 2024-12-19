@@ -1,0 +1,177 @@
+# 1. CrateDB Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cratedb
+  namespace: cratedb
+  labels:
+    app: cratedb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cratedb
+  template:
+    metadata:
+      labels:
+        app: cratedb
+    spec:
+      containers:
+      - name: cratedb
+        image: crate:latest
+        ports:
+        - containerPort: 4200
+        - containerPort: 5432
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+          requests:
+            memory: "900Mi"
+            cpu: "0.50"
+        env:
+        - name: CRATE_HEAP_SIZE
+          value: 4g
+        - name: discovery.type
+          value: single-node
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cratedb
+  namespace: cratedb
+spec:
+  selector:
+    app: cratedb
+  ports:
+  - port: 4200
+    targetPort: 4200
+    name: http
+  - port: 5432
+    targetPort: 5432
+    name: postgres
+---
+# 2. MLflow Tracking Server Deployment (with Sidecar)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow-tracking
+  namespace: mlflow-tracking
+  labels:
+    app: mlflow-tracking
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow-tracking
+  template:
+    metadata:
+      labels:
+        app: mlflow-tracking
+    spec:
+      volumes:
+      - name: mlflow-tracking-root
+        emptyDir: {}
+      #volumes:
+      #  - name: mlflow-tracking-root
+      #    persistentVolumeClaim:
+      #      claimName: mlflow-tracking-pvc  # Reference to the PVC
+      initContainers:
+      - name: mlflow-artifacts-folder-creator
+        image: busybox
+        command: 
+        - /bin/sh
+        - -c
+        - |
+          mkdir -p /mlartifacts
+          chmod 777 /mlartifacts
+      
+        volumeMounts:
+        - name: mlflow-tracking-root
+          mountPath: /mlartifacts
+      
+      containers:
+      - name: mlflow-tracking
+        image: ghcr.io/crate/mlflow-cratedb:latest
+        command: ["mlflow-cratedb", "server"]
+        args: [
+          "--backend-store-uri=crate://crate@cratedb.cratedb.svc.cluster.local:4200/?schema=mlflow", 
+          "--host=0.0.0.0", 
+          "--gunicorn-opts=--log-level=debug"
+        ]
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+          - name: mlflow-tracking-root
+            mountPath: /mlartifacts
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+          requests:
+            memory: "500Mi"
+            cpu: "0.50"
+
+      # Sidecar container to monitor the MLflow artifacts directory
+      - name: model-artifact-builder
+        image: leovice/mlflow-artifact-builder:dev
+        imagePullPolicy: Always
+        env:
+        - name: MLFLOW_ROOT_NAME
+          value: "mlartifacts"
+        - name: MLFLOW_ARTIFACTS_PATH
+          value: "/mlartifacts" # if changed, also update the volumeMounts path
+        - name: REGISTRY
+          value: "docker.io"
+        - name: REGISTRY_NAMESPACE
+          valueFrom:
+            secretKeyRef:
+              name: registry-credentials
+              key: registry-namespace
+        - name: REGISTRY_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: registry-credentials
+              key: registry-username
+        - name: REGISTRY_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: registry-credentials
+              key: registry-password
+        volumeMounts:
+          - name: mlflow-tracking-root
+            mountPath: /mlartifacts
+            readOnly: true
+        resources:
+          limits:
+            memory: "1Gi"
+            cpu: "1"
+          requests:
+            memory: "400Mi"
+            cpu: "0.25"
+
+---
+#apiVersion: v1
+#kind: PersistentVolumeClaim
+#metadata:
+#  name: mlflow-tracking-pvc
+#  namespace: mlflow-tracking
+#spec:
+#  accessModes:
+#    - ReadWriteOnce
+#  resources:
+#    requests:
+#      storage: 500Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-tracking
+  namespace: mlflow-tracking
+spec:
+  selector:
+    app: mlflow-tracking
+  ports:
+  - port: 5000
+    targetPort: 5000
+

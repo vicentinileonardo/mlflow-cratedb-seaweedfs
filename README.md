@@ -1,4 +1,4 @@
-# mlflow-cratedb-demo
+# mlflow K8s deployment
 
 Main references:
 - https://github.com/crate/mlflow-cratedb/
@@ -7,7 +7,30 @@ Main references:
 
 Notes:
 - Current mlflow version is: 2.19.0
-- mlflow version found inside mlflow-cratedb adapter is: 2.14.1
+- mlflow version found inside mlflow-cratedb adapter is: 2.14.1 (to be confirmed)
+
+## Overview
+
+TODO
+
+## Architecture
+
+The tracking server is used as a proxy to store the metadata in CrateDB. 
+In addition, if SeaweedFS is used, the artifacts are stored in SeaweedFS and tracking server is used as a proxy.
+If SeaweedFS is not used, the artifacts are stored in the local filesystem of the tracking server.
+
+
+TODO (add diagrams)
+
+TODO
+Option 1 (SeaweedFS)
+Option 2 (sidecar that build OCI images)
+Option 3 (simple, local filesystem of the tracking server)
+
+## Prerequisites
+
+- SeaweedFS running in the cluster (please see [SeaweedFS installation](/seaweedfs/README.md) in this repository) only if you want to use the SeaweedFS storage as an S3-compatible Artifact Store (see [mlfow Artifact Stores](https://mlflow.org/docs/latest/tracking/artifacts-stores.html) to know more about it). This option is recommended.
+
 
 ## How to install
 
@@ -17,8 +40,23 @@ kubectl create ns cratedb
 kubectl create ns mlflow-tracking
 ```
 
-Install **CrateDB** and **mlflow tracking server**:
+Install CrateDB PersistentVolumeClaim (adjust the storage size if needed):
 ```bash
+kubectl apply -f manifests/cratedb-pvc.yaml
+```
+
+Install **CrateDB** and **mlflow tracking server** (choose one of the options below):
+- Option 1: Installation with SeaweedFS (recommended):
+```bash
+# Installation with SeaweedFS
+kubectl apply -f manifests/mlflow-cratedb-seaweedfs.yaml
+```
+
+- Option 2: TODO (WIP)
+
+- Option 3: Simple installation without SeaweedFS and without sidecar (storage in the local filesystem of the tracking server), recommended only for testing purposes:
+```bash
+# Simple installation without SeaweedFS
 kubectl apply -f manifests/mlflow-cratedb.yaml
 ```
 
@@ -83,6 +121,8 @@ You can access the mlflow tracking server in the browser at [http://localhost:50
 
 ## Running experiments inside the cluster
 
+If you want to run experiments inside the cluster, you can use the mlflow experiments configurations (K8s jobs) provided in the `manifests/mlflow-experiments.yaml` file.
+
 Apply the mlflow experiments configurations (K8s jobs):
 ```bash
 kubectl apply -f manifests/mlflow-experiments.yaml
@@ -90,17 +130,18 @@ kubectl apply -f manifests/mlflow-experiments.yaml
 
 ## Local experiments with mlflow tracking
 
-Using a local Python file with mlflow tracking (`tracking_dummy_local.py`).
-The file imports the upstream mlflow library and uses the tracking API (e.g. `mlflow.set_experiment("dummy-experiment-local-env")`, `mlflow.log_metric("precision", 0.33)`).
-The `mlflow_cratedb` library is not needed.
+This is the **typical use case** where clients run experiments locally and send the metadata and artifacts to the tracking server. 
 
-The following is not needed in this case:
+Taking the `tracking_dummy_local.py` file as an example.
+The file imports the upstream mlflow library and uses the tracking API (e.g. `mlflow.set_experiment("dummy-experiment-local-env")`, `mlflow.log_metric("precision", 0.33)`).
+
+The `mlflow_cratedb` library is not needed in this case since the tracking server is used as a proxy to store the metadata in CrateDB. There is the possibility to use the `mlflow_cratedb` library to store the metadata directly in CrateDB (not the case here).
+Therefore, the following is not needed in this case:
 ```python
 def start_adapter():
     logger.info("Initializing CrateDB adapter")
     import mlflow_cratedb  # noqa: F401
 ```
-Probably this is needed only when the tracking server is not used as proxy but the metadata is sent directly in CrateDB (not the case here).
 
 Prepare the local environment:
 ```bash
@@ -125,11 +166,14 @@ mlflow-cratedb, version 2.14.1
 
 Run the local experiment:
 ```bash
+# if not set in the code, set the MLFLOW_TRACKING_URI environment variable
 export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
 python tracking_dummy_local.py
 ```
 
 ## Running queries on CrateDB
+
+If you want to run queries on CrateDB to check the experiments and runs, you can use the configurations provided in the `manifests/cratedb-queries.yaml` file.
 
 Running SELECT queries on CrateDB to check experiments and runs:
 ```bash
