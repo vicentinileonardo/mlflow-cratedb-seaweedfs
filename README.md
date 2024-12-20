@@ -168,11 +168,11 @@ Run the local experiments:
 ```bash
 # if not set in the code, set the MLFLOW_TRACKING_URI environment variable
 export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
-python tracking_dummy_local.py
-python tracking_test.py
+python local_experiments/tracking_dummy_local.py
+python local_experiments/tracking_test.py
 
 # the following example will save artifacts (like the model)
-python tracking_wine_model.py 
+python local_experiments/tracking_wine_model.py 
 ```
 
 ## Running queries on CrateDB
